@@ -20,13 +20,9 @@ typedef struct s_malloc
 
 static t_malloc	*get_malloc_list_head(void)
 {
-	static t_malloc	*head = NULL;
+	static t_malloc	head;
 
-	if (head == NULL)
-		head = malloc(sizeof(t_malloc));
-	if (head == NULL)
-		return (NULL);
-	return (head);
+	return (&head);
 }
 
 void	*ft_malloc(size_t size)
@@ -35,15 +31,13 @@ void	*ft_malloc(size_t size)
 	t_malloc	*head;
 	t_malloc	*node;
 
-	head = get_malloc_list_head();
-	if (head == NULL)
-		return (NULL);
 	memory = malloc(size + sizeof(t_malloc));
 	if (memory == NULL)
 		return (NULL);
 	node = memory;
 	node->size = size;
 	node->next = NULL;
+	head = get_malloc_list_head();
 	while (head->next != NULL)
 		head = head->next;
 	head->next = node;
@@ -51,16 +45,21 @@ void	*ft_malloc(size_t size)
 	return (memory);
 }
 
+static void	listclear_malloc(t_malloc **list)
+{
+	if (list == NULL || *list == NULL)
+		return ;
+	listclear_malloc(&(*list)->next);
+	free(*list);
+	*list = NULL;
+}
+
 void	ft_freeall(void)
 {
-	t_malloc	*list;
+	t_malloc	*head;
 
-	list = get_malloc_list_head();
-	while (list != NULL)
-	{
-		free(list);
-		list = list->next;
-	}
+	head = get_malloc_list_head();
+	listclear_malloc(&head->next);
 }
 
 void	ft_free(void *ptr)
@@ -68,10 +67,10 @@ void	ft_free(void *ptr)
 	t_malloc	*node;
 	t_malloc	*prev;
 
-	prev = get_malloc_list_head();
-	if (ptr == NULL || prev == NULL)
+	if (ptr == NULL)
 		return ;
 	ptr = (t_malloc *)ptr - 1;
+	prev = get_malloc_list_head();
 	node = prev->next;
 	while (node->next != NULL && node != ptr)
 	{
@@ -95,6 +94,7 @@ void	ft_free_2d(void ***to_free)
 		i++;
 	}
 	ft_free(*to_free);
+	*to_free = NULL;
 }
 
 int	main(void)
@@ -108,6 +108,7 @@ int	main(void)
 		bzero(test[i], 50 * sizeof(**test));
 	}
 	test[10] = NULL;
+	printf("%p\n", test);
 	for (int i = 0; i < 10; i++)
 	{
 		for (int j = 0; j < 50; j++)
@@ -118,22 +119,26 @@ int	main(void)
 		printf(" %p\n", test[i]);
 	}
 	ft_free_2d((void ***)&test);
-	// test = (int **)ft_malloc(10 * sizeof(*test));
-	// for (int i = 0; i < 10; i++)
-	// {
-	// 	test[i] = (int *)ft_malloc(50 * sizeof(**test));
-	// 	bzero(test[i], 50 * sizeof(**test));
-	// }
-	// for (int i = 0; i < 10; i++)
-	// {
-	// 	for (int j = 0; j < 50; j++)
-	// 	{
-	// 		test[i][j] = 10;
-	// 		printf("%d %p ", test[i][j], test[i]);
-	// 	}
-	// 	printf("\n");
-	// }
 	ft_freeall();
-	system("leaks philo");
+	test = (int **)ft_malloc(11 * sizeof(*test));
+	for (int i = 0; i < 10; i++)
+	{
+		test[i] = (int *)ft_malloc(50 * sizeof(**test));
+		bzero(test[i], 50 * sizeof(**test));
+	}
+	test[10] = NULL;
+	for (int i = 0; i < 10; i++)
+	{
+		for (int j = 0; j < 50; j++)
+		{
+			test[i][j] = 10;
+			printf("%d", test[i][j]);
+		}
+		printf(" %p\n", test[i]);
+	}
+	printf("%p\n", test);
+	// ft_free_2d((void ***)&test);
+	ft_freeall();
+	// system("leaks philo");
 	return (0);
 }
