@@ -6,7 +6,7 @@
 /*   By: skienzle <skienzle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/21 20:03:48 by skienzle          #+#    #+#             */
-/*   Updated: 2021/10/21 20:14:00 by skienzle         ###   ########.fr       */
+/*   Updated: 2021/10/27 17:06:25 by skienzle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,48 +97,48 @@ void	ft_free_2d(void ***to_free)
 	*to_free = NULL;
 }
 
-int	main(void)
-{
-	int	**test;
+// int	main(void)
+// {
+// 	int	**test;
 
-	test = (int **)ft_malloc(11 * sizeof(*test));
-	for (int i = 0; i < 10; i++)
-	{
-		test[i] = (int *)ft_malloc(50 * sizeof(**test));
-		bzero(test[i], 50 * sizeof(**test));
-	}
-	test[10] = NULL;
-	printf("%p\n", test);
-	for (int i = 0; i < 10; i++)
-	{
-		for (int j = 0; j < 50; j++)
-		{
-			// test[i][j] = 10;
-			printf("%d", test[i][j]);
-		}
-		printf(" %p\n", test[i]);
-	}
-	ft_free_2d((void ***)&test);
-	ft_freeall();
-	test = (int **)ft_malloc(11 * sizeof(*test));
-	for (int i = 0; i < 10; i++)
-	{
-		test[i] = (int *)ft_malloc(50 * sizeof(**test));
-		bzero(test[i], 50 * sizeof(**test));
-	}
-	test[10] = NULL;
-	for (int i = 0; i < 10; i++)
-	{
-		for (int j = 0; j < 50; j++)
-		{
-			test[i][j] = 10;
-			printf("%d", test[i][j]);
-		}
-		printf(" %p\n", test[i]);
-	}
-	printf("%p\n", test);
-	// ft_free_2d((void ***)&test);
-	ft_freeall();
-	// system("leaks philo");
-	return (0);
-}
+// 	test = (int **)ft_malloc(11 * sizeof(*test));
+// 	for (int i = 0; i < 10; i++)
+// 	{
+// 		test[i] = (int *)ft_malloc(50 * sizeof(**test));
+// 		bzero(test[i], 50 * sizeof(**test));
+// 	}
+// 	test[10] = NULL;
+// 	printf("%p\n", test);
+// 	for (int i = 0; i < 10; i++)
+// 	{
+// 		for (int j = 0; j < 50; j++)
+// 		{
+// 			// test[i][j] = 10;
+// 			printf("%d", test[i][j]);
+// 		}
+// 		printf(" %p\n", test[i]);
+// 	}
+// 	ft_free_2d((void ***)&test);
+// 	ft_freeall();
+// 	test = (int **)ft_malloc(11 * sizeof(*test));
+// 	for (int i = 0; i < 10; i++)
+// 	{
+// 		test[i] = (int *)ft_malloc(50 * sizeof(**test));
+// 		bzero(test[i], 50 * sizeof(**test));
+// 	}
+// 	test[10] = NULL;
+// 	for (int i = 0; i < 10; i++)
+// 	{
+// 		for (int j = 0; j < 50; j++)
+// 		{
+// 			test[i][j] = 10;
+// 			printf("%d", test[i][j]);
+// 		}
+// 		printf(" %p\n", test[i]);
+// 	}
+// 	printf("%p\n", test);
+// 	// ft_free_2d((void ***)&test);
+// 	ft_freeall();
+// 	// system("leaks philo");
+// 	return (0);
+// }
