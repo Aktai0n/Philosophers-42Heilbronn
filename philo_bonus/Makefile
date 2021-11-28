@@ -5,21 +5,18 @@
 #                                                     +:+ +:+         +:+      #
 #    By: skienzle <skienzle@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2021/10/21 14:22:51 by skienzle          #+#    #+#              #
-#    Updated: 2021/11/28 01:02:19 by skienzle         ###   ########.fr        #
+#    Created: 2021/11/28 18:58:04 by skienzle          #+#    #+#              #
+#    Updated: 2021/11/28 19:02:59 by skienzle         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME = philo
+NAME = philo_bonus
 CC = gcc
-CFLAGS = #-Wall -Werror -Wextra
+CFLAGS = -Wall -Werror -Wextra # -pthread -fsanitize=thread
 RM = rm -rf
 
-IDIR = inc
-INC = philosophers.h
-
 SDIR = src
-SRC = main.c utils.c malloc.c free.c exit.c init.c 
+SRC = main_bonus.c utils_bonus.c init_bonus.c exit_bonus.c
 
 ODIR = objs
 OBJ = $(patsubst %.c, %.o, $(SRC))

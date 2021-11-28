@@ -6,52 +6,52 @@
 /*   By: skienzle <skienzle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/21 14:35:28 by skienzle          #+#    #+#             */
-/*   Updated: 2021/11/28 01:19:25 by skienzle         ###   ########.fr       */
+/*   Updated: 2021/11/28 18:53:24 by skienzle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/philosophers.h"
 
-int64_t	timestamp_ms(void)
+uint64_t	timestamp_ms(void)
 {
 	struct timeval	time;
 
 	gettimeofday(&time, NULL);
-	return (time.tv_sec * 1000 + time.tv_usec / 1000);
+	return ((uint64_t)(time.tv_sec * 1000 + time.tv_usec / 1000));
 }
 
-void	wait_ms(int64_t ms)
+void	wait_ms(uint64_t ms, int num_threads)
 {
-	int64_t	start;
+	uint64_t	end;
 
-	start = timestamp_ms();
-	while (timestamp_ms() - start < ms)
-		usleep(200);
+	end = timestamp_ms() + ms;
+	while (timestamp_ms() < end)
+		usleep(num_threads);
 }
 
 void	print_state(const t_philo *philo, const t_state state,
 					pthread_mutex_t *print_lock)
 {
-	int64_t current_time;
+	uint64_t current_time;
 
 	pthread_mutex_lock(print_lock);
-	if (philo->data->running == TRUE)
+	if (philo->data->running == TRUE || state == dead)
 	{
 		current_time = timestamp_ms() - philo->data->start_time;
 		if (state == taking_a_fork)
-			printf("%-5lld \e[1;37m%-3d \033[0;33m%s",
+			printf("%-5llu \e[1;37m%-3d \033[0;33m%s",
 				current_time, philo->id, "has taken a fork");
 		else if (state == eating)
-			printf("%-5lld \e[1;37m%-3d \033[0;32m%s",
+			printf("%-5llu \e[1;37m%-3d \033[0;32m%s",
 				current_time, philo->id, "is eating");
 		else if (state == sleeping)
-			printf("%-5lld \e[1;37m%-3d \033[0;34m%s",
+			printf("%-5llu \e[1;37m%-3d \033[0;34m%s",
 				current_time, philo->id, "is sleeping");
 		else if (state == thinking)
-			printf("%-5lld \e[1;37m%-3d \033[0;35m%s",
+			printf("%-5llu \e[1;37m%-3d \033[0;35m%s",
 				current_time, philo->id, "is thinking");
 		else if (state == dead)
-			printf("%-5lld \e[1;37m%-3d \033[0;31m%s",
+			printf("%-5llu \e[1;37m%-3d \033[0;31m%s",
 				current_time, philo->id, "died");
 		printf("\033[0m\n");
 	}
@@ -67,10 +67,10 @@ void	eating_state(t_philo *philo)
 	print_state(philo, philo->state, &philo->data->print_lock);
 	philo->state = eating;
 	print_state(philo, philo->state, &philo->data->print_lock);
-	philo->last_meal = timestamp_ms();
+	philo->death_time = timestamp_ms() + (uint64_t)philo->data->time_to_die;
 	if (philo->data->max_num_eat > 0)
 		philo->num_eat--;
-	wait_ms(philo->data->time_to_eat);
+	wait_ms(philo->data->time_to_eat, philo->data->num_philos);
 	pthread_mutex_unlock(philo->left_fork);
 	pthread_mutex_unlock(philo->right_fork);
 }
@@ -79,7 +79,7 @@ void	sleeping_state(t_philo *philo)
 {
 	philo->state = sleeping;
 	print_state(philo, philo->state, &philo->data->print_lock);
-	wait_ms(philo->data->time_to_sleep);
+	wait_ms(philo->data->time_to_sleep, philo->data->num_philos);
 }
 
 void	thinking_state(t_philo *philo)
@@ -120,15 +120,15 @@ void	*philo_loop(void *attr)
 	philo = (t_philo *)attr;
 	while (philo->data->running == FALSE)
 		continue ;
-	philo->last_meal = timestamp_ms();
+	philo->death_time = timestamp_ms() + (uint64_t)philo->data->time_to_die;
 	if (philo->data->num_philos == 1)
 	{
 		print_state(philo, taking_a_fork, &philo->data->print_lock);
-		wait_ms(philo->data->time_to_die);
+		wait_ms(philo->data->time_to_die, philo->data->num_philos);
 		return (NULL);
 	}
 	if (philo->id % 2 != 0)
-		wait_ms(philo->data->time_to_sleep / 2);
+		wait_ms(philo->data->time_to_eat / 2, philo->data->num_philos);
 	while (philo->data->running == TRUE && philo->num_eat != 0)
 	{
 		if (philo->state == thinking)
@@ -141,25 +141,26 @@ void	*philo_loop(void *attr)
 	return (NULL);
 }
 
-void	*ft_death(void *attr)
+void	*ft_mortis(void *attr)
 {
 	const t_philo	*all_philo;
-	t_data	*data;
-	int		i;
+	t_data			*data;
+	int				i;
 
 	all_philo = (const t_philo *)attr;
 	data = all_philo->data;
+	data->start_time = timestamp_ms();
 	data->running = TRUE;
-	usleep(data->time_to_die * 900);
+	wait_ms(data->time_to_die / 2, data->num_philos);
 	while (TRUE)
 	{
 		i = 0;
 		while (i < data->num_philos)
 		{
-			if (timestamp_ms() >= all_philo[i].last_meal + data->time_to_die)
+			if (timestamp_ms() > all_philo[i].death_time)
 			{
-				print_state(all_philo + i, dead, &data->print_lock);
 				data->running = FALSE;
+				print_state(all_philo + i, dead, &data->print_lock);
 				return (NULL);
 			}
 			i++;
@@ -185,8 +186,7 @@ int	run_philo(t_data *data)
 		usleep(100);
 		i++;
 	}
-	data->start_time = timestamp_ms();
-	if (pthread_create(&death, NULL, ft_death, (void *)philo_data))
+	if (pthread_create(&death, NULL, ft_mortis, (void *)philo_data))
 		return (ft_exit(data, "thead creation failed"));
 	pthread_detach(death);
 	i = 0;
@@ -208,20 +208,6 @@ int	main(int argc, char **argv)
 		return (RETURN_FAILURE);
 	if (run_philo(&data))
 		return (RETURN_FAILURE);
-	// pthread_mutex_t	print_lock;
-	// pthread_mutex_init(&print_lock, NULL);
-	// data.start_time = timestamp_ms();
-	// t_philo philo;
-	// philo.state = 0;
-	// philo.data = &data;
-	// for (int i = 0; i < 100; i++)
-	// {
-	// 	print_state(&philo, &print_lock);
-	// 	philo.state++;
-	// 	if (philo.state == 5)
-	// 		philo.state = 0;
-	// 	wait_ms(100);
-	// }
 	destroy_locks(&data);
 	ft_freeall();
 	return (RETURN_SUCCESS);

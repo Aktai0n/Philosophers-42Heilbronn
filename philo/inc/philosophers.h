@@ -6,7 +6,7 @@
 /*   By: skienzle <skienzle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/21 14:36:00 by skienzle          #+#    #+#             */
-/*   Updated: 2021/11/28 00:37:01 by skienzle         ###   ########.fr       */
+/*   Updated: 2021/11/28 18:42:33 by skienzle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ typedef struct s_data
 	int				time_to_sleep;
 	int				max_num_eat;
 	int				running;
-	int64_t			start_time;
+	uint64_t		start_time;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	print_lock;
 }	t_data;
@@ -57,7 +57,7 @@ typedef struct s_philo
 	int				id;
 	int				num_eat;
 	t_state			state;
-	int64_t			last_meal;
+	uint64_t		death_time;
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
 	t_data			*data;

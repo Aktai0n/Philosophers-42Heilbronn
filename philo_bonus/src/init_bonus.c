@@ -1,25 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   init.c                                             :+:      :+:    :+:   */
+/*   init_bonus.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: skienzle <skienzle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/27 18:21:06 by skienzle          #+#    #+#             */
-/*   Updated: 2021/11/27 19:37:43 by skienzle         ###   ########.fr       */
+/*   Updated: 2021/11/28 20:22:24 by skienzle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/philosophers.h"
+#include "../inc/philosophers_bonus.h"
 
-static int	input_incorrect(int argc, char **argv)
+static int	input_correct(int argc, char **argv)
 {
 	int	i;
 	int	j;
 	int	index;
 
 	if (argc != 5 && argc != 6)
-		return (RETURN_FAILURE);
+		return (FALSE);
 	i = 1;
 	while (argv[i] != NULL)
 	{
@@ -28,16 +28,16 @@ static int	input_incorrect(int argc, char **argv)
 		while (argv[i][j] != '\0')
 		{
 			if (!ft_isdigit(argv[i][j]) && argv[i][j] != '+')
-				return (RETURN_FAILURE);
+				return (FALSE);
 			if (argv[i][j] == '+')
 				index++;
 			j++;
 		}
 		if (index > 1)
-			return (RETURN_FAILURE);
+			return (FALSE);
 		i++;
 	}
-	return (RETURN_SUCCESS);
+	return (TRUE);
 }
 
 static int	convert_input(int argc, char **argv, t_data *data)
@@ -48,37 +48,34 @@ static int	convert_input(int argc, char **argv, t_data *data)
 	data->time_to_sleep = ft_atoi(argv[4]);
 	if (argc == 6)
 	{
-		data->max_num_eat = ft_atoi(argv[5]);
-		if (data->max_num_eat <= 0)
-			return (RETURN_FAILURE);
+		data->num_eat = ft_atoi(argv[5]);
+		if (data->num_eat <= 0)
+			return (FALSE);
 	}
 	else
-		data->max_num_eat = -1;
+		data->num_eat = -1;
 	if (data->num_philos < 0 || data->time_to_die < 0
 		|| data->time_to_eat < 0 || data->time_to_sleep < 0)
-		return (RETURN_FAILURE);
-	return (RETURN_SUCCESS);
+		return (FALSE);
+	return (TRUE);
 }
 
-int	init_data(int argc, char **argv, t_data *data)
+void	init_data(int argc, char **argv, t_data *data)
 {
-	int	i;
-
-	if (input_incorrect(argc, argv))
-		return (ft_exit(data, "Invalid input format"));
-	if (convert_input(argc, argv, data))
-		return (ft_exit(data, "Invalid number"));
-	data->forks = (pthread_mutex_t *)ft_malloc
-					(data->num_philos * sizeof(pthread_mutex_t));
-	if (data->forks == NULL)
-		return (ft_exit(data, "malloc failed"));
-	if (pthread_mutex_init(&data->print_lock, NULL))
-		return (ft_exit(data, "mutex initialisation failed"));
-	while (i < data->num_philos)
-	{
-		if (pthread_mutex_init(data->forks + i, NULL))
-			return (ft_exit(data, "mutex initialisation failed"));
-		i++;
-	}
-	return (RETURN_SUCCESS);
+	if (!input_correct(argc, argv))
+		ft_exit(data, "Invalid input format");
+	if (!convert_input(argc, argv, data))
+		ft_exit(data, "Invalid number");
+	data->print_lock = sem_open("print_lock", O_CREAT, 0644, 1);
+	if (data->print_lock == SEM_FAILED)
+		ft_exit(data, "semaphore creation failed");
+	data->forks = sem_open("forks", O_CREAT, 0644, data->num_philos);
+	if (data->forks == SEM_FAILED)
+		ft_exit(data, "semaphore creaton failed");
+	data->start_lock = sem_open("start_lock", O_CREAT, 0644 , 0);
+	if (data->start_lock == SEM_FAILED)
+		ft_exit(data, "semaphore creaton failed");
+	sem_unlink("print_lock");
+	sem_unlink("forks");
+	sem_unlink("start_lock");
 }
