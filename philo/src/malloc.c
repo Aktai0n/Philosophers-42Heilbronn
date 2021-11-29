@@ -6,11 +6,13 @@
 /*   By: skienzle <skienzle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/21 20:03:48 by skienzle          #+#    #+#             */
-/*   Updated: 2021/11/27 15:33:07 by skienzle         ###   ########.fr       */
+/*   Updated: 2021/11/29 01:29:05 by skienzle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/alloc.h"
+
+#include <string.h>
 
 t_alloc	*get_alloc_list_head(void)
 {
@@ -39,18 +41,6 @@ void	*ft_malloc(size_t size)
 	return (memory);
 }
 
-void	ft_bzero(void *ptr, size_t n)
-{
-	size_t	i;
-
-	i = 0;
-	while (i < n)
-	{
-		((unsigned char *)ptr)[i] = '\0';
-		i++;
-	}
-}
-
 void	*ft_calloc(size_t nitems, size_t size)
 {
 	void	*memory;
@@ -60,6 +50,6 @@ void	*ft_calloc(size_t nitems, size_t size)
 	memory = ft_malloc(tot_size);
 	if (memory == NULL)
 		return (NULL);
-	ft_bzero(memory, tot_size);
+	memset(memory, 0, tot_size);
 	return (memory);
 }

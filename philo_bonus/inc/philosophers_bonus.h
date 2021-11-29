@@ -6,7 +6,7 @@
 /*   By: skienzle <skienzle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/28 17:26:28 by skienzle          #+#    #+#             */
-/*   Updated: 2021/11/28 20:13:43 by skienzle         ###   ########.fr       */
+/*   Updated: 2021/11/29 01:26:22 by skienzle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,18 +60,24 @@ typedef struct s_data
 ** Prototypes
 */
 
-void	init_data(int argc, char **argv, t_data *data);
-void	ft_exit(t_data *data, const char *message);
+void		init_data(int argc, char **argv, t_data *data);
+
+void		run_processes(t_data *data);
+
+void		print_state(t_data *data, const t_state state);
+void		wait_ms(uint64_t ms, int num_processes);
+uint64_t	timestamp_ms(void);
+
+void		ft_exit(t_data *data, const char *message);
 
 /*
 ** Utils
 */
 
-int		ft_atoi(const char *str);
-void	ft_putendl_fd(const char *s, int fd);
-int		ft_isdigit(int c);
-size_t	ft_strlen(const char *str);
-void	ft_bzero(void *ptr, size_t n);
+int			ft_atoi(const char *str);
+void		ft_putendl_fd(const char *s, int fd);
+int			ft_isdigit(int c);
+size_t		ft_strlen(const char *str);
 
 /*
 ** Defines

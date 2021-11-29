@@ -6,7 +6,7 @@
 /*   By: skienzle <skienzle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/27 18:21:06 by skienzle          #+#    #+#             */
-/*   Updated: 2021/11/28 18:40:09 by skienzle         ###   ########.fr       */
+/*   Updated: 2021/11/29 01:27:50 by skienzle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ int	init_data(int argc, char **argv, t_data *data)
 	if (convert_input(argc, argv, data))
 		return (ft_exit(data, "Invalid number"));
 	data->forks = (pthread_mutex_t *)ft_malloc
-					(data->num_philos * sizeof(pthread_mutex_t));
+		(data->num_philos * sizeof(pthread_mutex_t));
 	if (data->forks == NULL)
 		return (ft_exit(data, "malloc failed"));
 	if (pthread_mutex_init(&data->print_lock, NULL))
@@ -82,4 +82,29 @@ int	init_data(int argc, char **argv, t_data *data)
 		i++;
 	}
 	return (RETURN_SUCCESS);
+}
+
+t_philo	*init_philo_data(t_data *data)
+{
+	t_philo	*philo_data;
+	int		i;
+
+	philo_data = (t_philo *)ft_calloc(data->num_philos, sizeof(t_philo));
+	if (philo_data == NULL)
+		return (NULL);
+	i = 0;
+	while (i < data->num_philos)
+	{
+		philo_data[i].id = i + 1;
+		philo_data[i].num_eat = data->max_num_eat;
+		philo_data[i].state = thinking;
+		philo_data[i].data = data;
+		philo_data[i].right_fork = data->forks + i;
+		if (i == 0)
+			philo_data[i].left_fork = data->forks + (data->num_philos - 1);
+		else
+			philo_data[i].left_fork = data->forks + (i - 1);
+		i++;
+	}
+	return (philo_data);
 }

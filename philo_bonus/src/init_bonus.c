@@ -6,7 +6,7 @@
 /*   By: skienzle <skienzle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/27 18:21:06 by skienzle          #+#    #+#             */
-/*   Updated: 2021/11/28 20:22:24 by skienzle         ###   ########.fr       */
+/*   Updated: 2021/11/29 01:21:58 by skienzle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ void	init_data(int argc, char **argv, t_data *data)
 	data->forks = sem_open("forks", O_CREAT, 0644, data->num_philos);
 	if (data->forks == SEM_FAILED)
 		ft_exit(data, "semaphore creaton failed");
-	data->start_lock = sem_open("start_lock", O_CREAT, 0644 , 0);
+	data->start_lock = sem_open("start_lock", O_CREAT, 0644, 0);
 	if (data->start_lock == SEM_FAILED)
 		ft_exit(data, "semaphore creaton failed");
 	sem_unlink("print_lock");

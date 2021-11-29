@@ -6,7 +6,7 @@
 /*   By: skienzle <skienzle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/21 14:36:00 by skienzle          #+#    #+#             */
-/*   Updated: 2021/11/28 18:42:33 by skienzle         ###   ########.fr       */
+/*   Updated: 2021/11/28 23:32:34 by skienzle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,10 +68,18 @@ typedef struct s_philo
 */
 
 int			init_data(int argc, char **argv, t_data *data);
+t_philo		*init_philo_data(t_data *data);
+
+void		*philo_loop(void *attr);
+void		*ft_mortis(void *attr);
+
+uint64_t	timestamp_ms(void);
+void		wait_ms(uint64_t ms, int num_threads);
+void		print_state(const t_philo *philo, const t_state state,
+				pthread_mutex_t *print_lock);
 
 int			ft_exit(t_data *data, const char *message);
 void		destroy_locks(t_data *data);
-
 
 /*
 ** Utils
@@ -81,12 +89,9 @@ size_t		ft_strlen(const char *str);
 int			ft_isdigit(int c);
 void		ft_putendl_fd(const char *s, int fd);
 int			ft_atoi(const char *str);
-void		ft_bzero(void *ptr, size_t n);
-
 
 void		*ft_malloc(size_t size);
 void		*ft_calloc(size_t nitems, size_t size);
-void		*ft_realloc(void *ptr, size_t size);
 void		ft_free(void *ptr);
 void		ft_freeall(void);
 void		ft_free_1d(void **to_free);
