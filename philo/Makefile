@@ -13,7 +13,7 @@
 NAME = philo
 BNAME = philo_bonus
 CC = gcc
-CFLAGS = -Wall -Werror -Wextra  -pthread # -fsanitize=thread
+CFLAGS = -Wall  -Wextra -Werror -pthread # -fsanitize=thread
 RM = rm -rf
 
 SDIR = src

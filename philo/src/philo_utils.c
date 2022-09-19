@@ -39,19 +39,19 @@ void	print_state(const t_philo *philo, const t_state state,
 	{
 		current_time = timestamp_ms() - philo->data->start_time;
 		if (state == taking_a_fork)
-			printf("%-5llu %-3d %s",
+			printf("%-5lu %-3d %s",
 				current_time, philo->id, "has taken a fork\n");
 		else if (state == eating)
-			printf("%-5llu %-3d %s",
+			printf("%-5lu %-3d %s",
 				current_time, philo->id, "is eating\n");
 		else if (state == sleeping)
-			printf("%-5llu %-3d %s",
+			printf("%-5lu %-3d %s",
 				current_time, philo->id, "is sleeping\n");
 		else if (state == thinking)
-			printf("%-5llu %-3d %s",
+			printf("%-5lu %-3d %s",
 				current_time, philo->id, "is thinking\n");
 		else if (state == dead)
-			printf("%-5llu %-3d %s",
+			printf("%-5lu %-3d %s",
 				current_time, philo->id, "died\n");
 	}
 	pthread_mutex_unlock(print_lock);
